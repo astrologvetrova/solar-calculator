@@ -1,88 +1,74 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Калькулятор Солнца в соляре</title>
-  <meta name="description" content="Узнай, в каком доме соляра находится твоё Солнце.">
+  <meta name="description" content="Рассчитай дом Солнца в соляре и узнай главную тему своего нового личного года.">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      padding: 24px 16px;
-      min-height: 100vh;
+      padding: 20px 14px;
       background: #f6f3ee;
       color: #332f2a;
       font-family: Arial, sans-serif;
     }
 
     .container {
-      width: 100%;
       max-width: 480px;
-      margin: 30px auto;
+      margin: 20px auto;
     }
 
     .card {
-      background: #fff;
+      background: white;
       border-radius: 22px;
-      padding: 28px 22px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+      padding: 26px 20px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.05);
     }
 
     .sun {
       text-align: center;
       font-size: 42px;
-      color: #b58b48;
-      margin-bottom: 12px;
+      color: #a9854e;
     }
 
     h1 {
       text-align: center;
-      font-size: 25px;
-      line-height: 1.25;
-      margin: 0 0 12px;
+      font-size: 26px;
+      line-height: 1.3;
     }
 
     .subtitle {
       text-align: center;
       color: #77716a;
-      line-height: 1.5;
+      line-height: 1.6;
       font-size: 15px;
-      margin-bottom: 28px;
+      margin-bottom: 25px;
     }
 
     label {
       display: block;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: bold;
       margin: 18px 0 8px;
     }
 
-    input,
-    select {
+    input, select {
       width: 100%;
-      min-height: 48px;
+      min-height: 50px;
       padding: 12px;
       border: 1px solid #ddd6cc;
-      border-radius: 10px;
-      background: #fff;
+      border-radius: 11px;
+      background: white;
       color: #332f2a;
       font-size: 16px;
     }
 
-    input:focus,
-    select:focus {
-      outline: 2px solid #c6a56e;
-      border-color: #c6a56e;
-    }
-
-    .city-wrap {
-      position: relative;
-    }
+    .city-wrap { position: relative; }
 
     #citySuggestions {
       position: absolute;
@@ -94,7 +80,6 @@
       border: 1px solid #ddd6cc;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 5px 15px rgba(0,0,0,.08);
     }
 
     .suggestion {
@@ -109,27 +94,23 @@
       color: #332f2a;
     }
 
-    .suggestion:active {
-      background: #f6f3ee;
-    }
-
-    .calculate {
+    .calculate, .order-button {
+      display: block;
       width: 100%;
-      min-height: 52px;
-      margin-top: 26px;
+      padding: 17px 12px;
+      margin-top: 25px;
       border: 0;
       border-radius: 12px;
       background: #a9854e;
       color: white;
-      font-size: 16px;
-      font-weight: 600;
+      font-size: 17px;
+      font-weight: bold;
+      text-align: center;
+      text-decoration: none;
       cursor: pointer;
     }
 
-    .calculate:disabled {
-      opacity: 0.6;
-      cursor: wait;
-    }
+    .calculate:disabled { opacity: .6; }
 
     #status {
       margin-top: 18px;
@@ -141,28 +122,97 @@
 
     #result {
       margin-top: 25px;
-      padding: 22px;
-      border-radius: 16px;
+    }
+
+    .result-card {
+      padding: 24px 19px;
+      border-radius: 17px;
       background: #f7f2e9;
       text-align: center;
     }
 
     #houseNumber {
       color: #a9854e;
-      font-size: 34px;
-      font-weight: 700;
+      font-size: 38px;
+      font-weight: bold;
       margin-bottom: 12px;
     }
 
     #houseTitle {
-      font-size: 20px;
-      margin-bottom: 12px;
+      font-size: 22px;
+      line-height: 1.3;
+      margin-bottom: 15px;
+      font-weight: bold;
     }
 
     #houseDescription {
       color: #625b52;
-      line-height: 1.6;
+      line-height: 1.7;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    .result-note {
+      color: #82796e;
+      font-size: 13px;
+      line-height: 1.5;
+      margin-top: 16px;
+    }
+
+    .sales {
+      margin-top: 26px;
+      padding: 23px 19px;
+      border: 1px solid #e7dfd2;
+      border-radius: 17px;
+      background: #fffdfa;
+    }
+
+    .sales h2 {
+      font-size: 21px;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .sales p, .sales li {
       font-size: 15px;
+      line-height: 1.65;
+      color: #625b52;
+    }
+
+    .sales ul {
+      padding-left: 20px;
+    }
+
+    .sales .order-button {
+      margin-top: 20px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      margin: 32px 0 12px;
+      text-align: center;
+    }
+
+    .house-guide details {
+      margin: 9px 0;
+      padding: 14px;
+      background: white;
+      border: 1px solid #e7dfd2;
+      border-radius: 12px;
+    }
+
+    .house-guide summary {
+      color: #8e7044;
+      font-weight: bold;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .house-guide p {
+      color: #625b52;
+      line-height: 1.65;
+      font-size: 14px;
+      margin-bottom: 0;
     }
 
     .note {
@@ -170,81 +220,186 @@
       font-size: 12px;
       line-height: 1.5;
       text-align: center;
-      margin-top: 22px;
+      margin-top: 24px;
     }
 
-    [hidden] {
-      display: none !important;
-    }
+    [hidden] { display: none !important; }
   </style>
 </head>
 
 <body>
-  <main class="container">
-    <section class="card">
-      <div class="sun">☼</div>
+<main class="container">
 
-      <h1>Солнце в соляре</h1>
+  <section class="card">
+    <div class="sun">☼</div>
 
-      <p class="subtitle">
-        Узнай, в каком доме твоего соляра находится Солнце
-        и какая сфера жизни станет особенно важной в новом году.
-      </p>
+    <h1>Солнце в соляре</h1>
 
-      <form id="solarForm">
-        <label for="birthDate">Дата рождения</label>
+    <p class="subtitle">
+      Узнай, какая сфера жизни станет одной из главных
+      в твоём новом личном году.
+      Рассчитай положение Солнца в доме соляра бесплатно.
+    </p>
+
+    <form id="solarForm">
+      <label for="birthDate">Дата рождения</label>
+      <input id="birthDate" type="date" required>
+
+      <label for="birthTime">Время рождения</label>
+      <input id="birthTime" type="time" required>
+
+      <label for="city">Город рождения</label>
+      <div class="city-wrap">
         <input
-          id="birthDate"
-          type="date"
+          id="city"
+          type="text"
+          placeholder="Начни вводить город"
+          autocomplete="off"
           required
         >
+        <div id="citySuggestions"></div>
+      </div>
 
-        <label for="birthTime">Время рождения</label>
-        <input
-          id="birthTime"
-          type="time"
-          required
-        >
+      <label for="solarYear">Год соляра</label>
+      <select id="solarYear" required></select>
 
-        <label for="city">Город рождения</label>
-        <div class="city-wrap">
-          <input
-            id="city"
-            type="text"
-            placeholder="Начни вводить город"
-            autocomplete="off"
-            required
-          >
-          <div id="citySuggestions"></div>
-        </div>
+      <button class="calculate" id="calculateButton" type="submit">
+        Рассчитать
+      </button>
+    </form>
 
-        <label for="solarYear">Год соляра</label>
-        <select id="solarYear" required></select>
+    <div id="status" role="status"></div>
 
-        <button
-          class="calculate"
-          id="calculateButton"
-          type="submit"
-        >
-          Рассчитать
-        </button>
-      </form>
-
-      <div id="status" role="status"></div>
-
-      <section id="result" hidden>
+    <section id="result" hidden>
+      <div class="result-card">
         <div id="houseNumber"></div>
         <div id="houseTitle"></div>
         <div id="houseDescription"></div>
-      </section>
+      </div>
 
-      <p class="note">
-        Расчёт выполняется по месту рождения с использованием
-        системы домов Плацидус.
+      <p class="result-note">
+        Это основная тема, на которую стоит обратить внимание.
+        Полная картина года раскрывается через анализ всей карты соляра.
       </p>
-    </section>
-  </main>
 
-  <script type="module" src="/src/main.js"></script>
+      <div class="sales">
+        <h2>Это только одна часть твоего соляра</h2>
+
+        <p>
+          Положение Солнца показывает одну из центральных
+          тем предстоящего года. Но в карте соляра есть
+          гораздо больше важных показателей.
+        </p>
+
+        <p>В персональном солярном прогнозе я разбираю:</p>
+
+        <ul>
+          <li>Главные события и тенденции предстоящего года.</li>
+          <li>Финансы, карьеру и профессиональные возможности.</li>
+          <li>Отношения, семью и личную жизнь.</li>
+          <li>Важные сферы перемен и новые возможности.</li>
+          <li>Ключевые периоды и месяцы года.</li>
+          <li>Аспекты планет и взаимодействие домов.</li>
+        </ul>
+
+        <p>
+          Прогноз составляется индивидуально по твоим данным
+          рождения с учётом натальной карты и карты соляра.
+        </p>
+
+        <a
+          class="order-button"
+          href="https://taplink.cc/astrolog_vetrova/p/ffc22f/"
+          target="_blank"
+          rel="noopener"
+        >
+          Заказать персональный солярный прогноз
+        </a>
+      </div>
+    </section>
+
+    <p class="note">
+      Расчёт выполняется по месту рождения с использованием
+      системы домов Плацидус.
+    </p>
+  </section>
+
+  <section class="house-guide">
+    <h2 class="section-title">Солнце в 12 домах соляра</h2>
+
+    <p class="subtitle">
+      Посмотри, какие жизненные темы связаны с каждым домом.
+    </p>
+
+    <details>
+      <summary>1 дом — личность и новые начинания</summary>
+      <p>Год личного обновления, самостоятельности и инициативы. В центре внимания — ты сама, твои желания, внешность, образ жизни и личные цели. Возможны изменения самоощущения, новый этап в жизни, желание заявить о себе и действовать независимо. Это время формирования нового образа себя и своего будущего.</p>
+    </details>
+
+    <details>
+      <summary>2 дом — деньги и личные ресурсы</summary>
+      <p>Важными становятся заработок, доходы, накопления и материальная стабильность. Год может побудить пересмотреть источники дохода, стоимость своей работы, финансовые привычки и отношение к собственности. Особое значение приобретают личные ресурсы, навыки и понимание собственной ценности.</p>
+    </details>
+
+    <details>
+      <summary>3 дом — общение и обучение</summary>
+      <p>На первый план выходят обучение, документы, переговоры, поездки и повседневные контакты. Возможны новые знакомства, освоение навыков, активное общение с родственниками, братьями, сёстрами и соседями. Информация и способность договариваться могут сыграть важную роль в событиях года.</p>
+    </details>
+
+    <details>
+      <summary>4 дом — дом и семья</summary>
+      <p>Главными становятся жильё, недвижимость, семья, родители и личное пространство. Возможны переезд, ремонт, покупка или продажа недвижимости, изменения семейных обстоятельств. Возникает потребность укрепить домашнюю опору, создать комфорт и разобраться с вопросами прошлого.</p>
+    </details>
+
+    <details>
+      <summary>5 дом — любовь, дети и творчество</summary>
+      <p>В центре внимания — романтические отношения, дети, творчество, увлечения и самовыражение. Может усилиться желание проявлять таланты, заниматься любимым делом, выходить на публику и получать признание. Год может быть насыщен событиями, связанными с личной жизнью и творческими проектами.</p>
+    </details>
+
+    <details>
+      <summary>6 дом — работа и повседневная жизнь</summary>
+      <p>Основное внимание направлено на работу, обязанности, рабочий график, здоровье и организацию повседневности. Возможны изменения условий труда, новые задачи, перестройка режима и привычек. Важной становится способность выстроить устойчивую систему дел и заботы о себе.</p>
+    </details>
+
+    <details>
+      <summary>7 дом — отношения и партнёрство</summary>
+      <p>В центре внимания оказываются супруг, партнёр, клиенты, деловые союзники и открытые оппоненты. Год может принести важные решения в личной жизни, оформление отношений, начало сотрудничества или пересмотр договорённостей. Особое значение приобретает баланс интересов и умение договариваться.</p>
+    </details>
+
+    <details>
+      <summary>8 дом — общие финансы и перемены</summary>
+      <p>Важными становятся общие деньги, кредиты, налоги, инвестиции, страхование, наследство и финансовые вопросы партнёра. Может возникнуть необходимость решать вопросы совместного имущества или обязательств. На внутреннем уровне год может сопровождаться глубокой переоценкой ценностей и психологическими изменениями.</p>
+    </details>
+
+    <details>
+      <summary>9 дом — путешествия и расширение горизонтов</summary>
+      <p>В центре внимания — дальние путешествия, образование, повышение квалификации, иностранные языки и мировоззрение. Может появиться желание получить новое образование, преподавать, установить международные контакты или выйти за пределы привычной среды. Год связан с поиском новых ориентиров и масштабных планов.</p>
+    </details>
+
+    <details>
+      <summary>10 дом — карьера и достижения</summary>
+      <p>Главными становятся профессия, карьера, социальный статус, репутация и общественное признание. Возможны профессиональный рост, смена должности, открытие собственного дела или повышение ответственности. Важным становится вопрос, какого положения и каких результатов ты хочешь достичь.</p>
+    </details>
+
+    <details>
+      <summary>11 дом — друзья и планы на будущее</summary>
+      <p>На первый план выходят друзья, коллективы, сообщества, аудитория и единомышленники. Год может расширить круг общения, принести полезные знакомства, коллективные проекты и поддержку окружающих. Особое значение приобретают долгосрочные планы и люди, которые помогают двигаться к целям.</p>
+    </details>
+
+    <details>
+      <summary>12 дом — внутренний мир и завершение циклов</summary>
+      <p>Важными становятся внутренний мир, уединение, отдых, психологическая работа и завершение процессов прошлого. Может усилиться потребность в тишине, переосмыслении жизненного пути и восстановлении сил. Это время внутренней подготовки к новому этапу и освобождения от того, что больше не приносит пользы.</p>
+    </details>
+
+    <p class="note">
+      Трактовки домов являются общими. Реальные проявления
+      определяются всей картой соляра, натальной картой,
+      аспектами и управителями домов.
+    </p>
+  </section>
+
+</main>
+
+<script type="module" src="/src/main.js"></script>
 </body>
 </html>
