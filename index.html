@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Калькулятор Солнца в соляре</title>
   <meta name="description" content="Рассчитай, в каком доме находится Солнце в твоём соляре. Узнай главные темы своего нового личного года.">
 
@@ -71,6 +70,13 @@
       font-size: 16px;
     }
 
+    .field-note {
+      color: #82796e;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 8px 2px 0;
+    }
+
     .city-wrap {
       position: relative;
     }
@@ -99,8 +105,7 @@
       color: #332f2a;
     }
 
-    .calculate,
-    .order-button {
+    .calculate, .order-button {
       display: block;
       width: 100%;
       padding: 17px 12px;
@@ -125,7 +130,7 @@
       margin-top: 18px;
       text-align: center;
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.6;
       color: #71695f;
     }
 
@@ -182,8 +187,7 @@
       text-align: center;
     }
 
-    .sales p,
-    .sales li {
+    .sales p, .sales li {
       font-size: 15px;
       line-height: 1.65;
       color: #625b52;
@@ -244,7 +248,6 @@
 </head>
 
 <body>
-
 <main class="container">
 
   <section class="card">
@@ -280,8 +283,13 @@
         <div id="citySuggestions"></div>
       </div>
 
-      <label for="solarYear">Год соляра</label>
+      <label for="solarYear">Год начала вашего нового личного года</label>
       <select id="solarYear" required></select>
+
+      <p class="field-note">
+        Например, соляр 2026 года начинается в день вашего рождения
+        в 2026 году и действует до следующего дня рождения в 2027 году.
+      </p>
 
       <button
         class="calculate"
@@ -298,13 +306,9 @@
     <section id="result" hidden>
 
       <div class="result-card">
-
         <div id="houseNumber"></div>
-
         <div id="houseTitle"></div>
-
         <div id="houseDescription"></div>
-
       </div>
 
       <p class="result-note">
@@ -322,9 +326,7 @@
           гораздо больше важных показателей.
         </p>
 
-        <p>
-          В персональном солярном прогнозе я разбираю:
-        </p>
+        <p>В персональном солярном прогнозе я разбираю:</p>
 
         <ul>
           <li>Ключевые темы и атмосферу года.</li>
@@ -352,7 +354,6 @@
         </a>
 
       </div>
-
     </section>
 
     <p class="note">
@@ -364,9 +365,7 @@
 
   <section class="house-guide">
 
-    <h2 class="section-title">
-      Солнце в 12 домах соляра
-    </h2>
+    <h2 class="section-title">Солнце в 12 домах соляра</h2>
 
     <p class="subtitle">
       Посмотри, какие жизненные темы связаны с каждым домом.
