@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+
   workflow_dispatch:
 
 permissions:
@@ -35,7 +36,7 @@ jobs:
       - name: Build calculator
         run: npm run build
 
-      - name: Upload build
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
