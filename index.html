@@ -1,66 +1,249 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f7f4ef" />
-  <title>Калькулятор соляра</title>
-</head>
-<body>
-  <div class="page">
-    <main class="card">
-      <div class="symbol">☀</div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор Солнца в соляре</title>
+  <meta name="description" content="Узнай, в каком доме соляра находится твоё Солнце.">
 
-      <h1>Какая тема станет главной в твоём новом личном году?</h1>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      min-height: 100vh;
+      background: #f6f3ee;
+      color: #332f2a;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 30px auto;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 22px;
+      padding: 28px 22px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    }
+
+    .sun {
+      text-align: center;
+      font-size: 42px;
+      color: #b58b48;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 25px;
+      line-height: 1.25;
+      margin: 0 0 12px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #77716a;
+      line-height: 1.5;
+      font-size: 15px;
+      margin-bottom: 28px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 18px 0 8px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 48px;
+      padding: 12px;
+      border: 1px solid #ddd6cc;
+      border-radius: 10px;
+      background: #fff;
+      color: #332f2a;
+      font-size: 16px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid #c6a56e;
+      border-color: #c6a56e;
+    }
+
+    .city-wrap {
+      position: relative;
+    }
+
+    #citySuggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      background: white;
+      border: 1px solid #ddd6cc;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0,0,0,.08);
+    }
+
+    .suggestion {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: 0;
+      border-bottom: 1px solid #eee;
+      background: white;
+      text-align: left;
+      font-size: 14px;
+      color: #332f2a;
+    }
+
+    .suggestion:active {
+      background: #f6f3ee;
+    }
+
+    .calculate {
+      width: 100%;
+      min-height: 52px;
+      margin-top: 26px;
+      border: 0;
+      border-radius: 12px;
+      background: #a9854e;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .calculate:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    #status {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #71695f;
+    }
+
+    #result {
+      margin-top: 25px;
+      padding: 22px;
+      border-radius: 16px;
+      background: #f7f2e9;
+      text-align: center;
+    }
+
+    #houseNumber {
+      color: #a9854e;
+      font-size: 34px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    #houseTitle {
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    #houseDescription {
+      color: #625b52;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .note {
+      color: #898177;
+      font-size: 12px;
+      line-height: 1.5;
+      text-align: center;
+      margin-top: 22px;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="container">
+    <section class="card">
+      <div class="sun">☼</div>
+
+      <h1>Солнце в соляре</h1>
+
       <p class="subtitle">
-        Рассчитай положение Солнца в соляре и узнай,
-        какая сфера жизни выйдет на первый план.
+        Узнай, в каком доме твоего соляра находится Солнце
+        и какая сфера жизни станет особенно важной в новом году.
       </p>
 
       <form id="solarForm">
         <label for="birthDate">Дата рождения</label>
-        <input id="birthDate" type="date" required />
+        <input
+          id="birthDate"
+          type="date"
+          required
+        >
 
         <label for="birthTime">Время рождения</label>
-        <input id="birthTime" type="time" required />
+        <input
+          id="birthTime"
+          type="time"
+          required
+        >
 
         <label for="city">Город рождения</label>
-        <input
-          id="city"
-          type="text"
-          placeholder="Начни вводить название города"
-          autocomplete="off"
-          required
-        />
-        <div id="citySuggestions" class="suggestions"></div>
+        <div class="city-wrap">
+          <input
+            id="city"
+            type="text"
+            placeholder="Начни вводить город"
+            autocomplete="off"
+            required
+          >
+          <div id="citySuggestions"></div>
+        </div>
 
         <label for="solarYear">Год соляра</label>
         <select id="solarYear" required></select>
 
-        <button id="calculateButton" type="submit">
-          Рассчитать мой соляр
+        <button
+          class="calculate"
+          id="calculateButton"
+          type="submit"
+        >
+          Рассчитать
         </button>
       </form>
 
-      <p id="status" class="status" role="status"></p>
+      <div id="status" role="status"></div>
 
-      <section id="result" class="result" hidden>
-        <p class="result-kicker">ТВОЯ ГЛАВНАЯ ТЕМА ГОДА</p>
-        <div id="houseNumber" class="house-number"></div>
-        <h2 id="houseTitle"></h2>
-        <p id="houseDescription"></p>
-        <p class="result-note">
-          Это один из показателей соляра. Чтобы увидеть общую картину года,
-          важно рассмотреть всю карту: планеты, дома и их взаимосвязи.
-        </p>
+      <section id="result" hidden>
+        <div id="houseNumber"></div>
+        <div id="houseTitle"></div>
+        <div id="houseDescription"></div>
       </section>
 
-      <p class="footnote">
-        Расчёт выполняется в тропическом зодиаке по системе домов Плацидуса.
-        Для расчёта используется город рождения и указанное время рождения.
+      <p class="note">
+        Расчёт выполняется по месту рождения с использованием
+        системы домов Плацидус.
       </p>
-    </main>
-  </div>
+    </section>
+  </main>
 
   <script type="module" src="/src/main.js"></script>
 </body>
