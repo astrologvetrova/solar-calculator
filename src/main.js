@@ -1,3 +1,4 @@
+
 import {
   SwissEphemeris,
   Planet,
@@ -7,18 +8,29 @@ import {
 const $ = (id) => document.getElementById(id);
 
 const descriptions = [
-  "Личность, самостоятельность, инициатива и новые начинания.",
-  "Личные доходы, заработок, материальные ресурсы и ценности.",
-  "Общение, обучение, документы, поездки и новые контакты.",
-  "Дом, семья, недвижимость, род и внутреннее благополучие.",
-  "Любовь, дети, творчество, увлечения и самовыражение.",
-  "Работа, повседневные обязанности, здоровье и организация жизни.",
-  "Отношения, брак, партнёрство и деловое сотрудничество.",
-  "Общие финансы, инвестиции, кредиты и глубокие перемены.",
-  "Путешествия, образование, мировоззрение и расширение горизонтов.",
-  "Карьера, профессия, статус, достижения и общественное признание.",
-  "Друзья, единомышленники, аудитория и долгосрочные планы.",
-  "Внутренний мир, уединение, завершение циклов и скрытые ресурсы."
+  "Год личного обновления, самостоятельности и инициативы. В центре внимания — ты сама, твои желания, внешность, образ жизни и личные цели. Возможны изменения самоощущения, новый этап в жизни, желание заявить о себе и действовать независимо. Это время формирования нового образа себя и своего будущего.",
+
+  "Важными становятся заработок, доходы, накопления и материальная стабильность. Год может побудить пересмотреть источники дохода, стоимость своей работы, финансовые привычки и отношение к собственности. Особое значение приобретают личные ресурсы, навыки и понимание собственной ценности.",
+
+  "На первый план выходят обучение, документы, переговоры, поездки и повседневные контакты. Возможны новые знакомства, освоение навыков, активное общение с родственниками, братьями, сёстрами и соседями. Информация и способность договариваться могут сыграть важную роль в событиях года.",
+
+  "Главными становятся жильё, недвижимость, семья, родители и личное пространство. Возможны переезд, ремонт, покупка или продажа недвижимости, изменения семейных обстоятельств. Возникает потребность укрепить домашнюю опору, создать комфорт и разобраться с вопросами прошлого.",
+
+  "В центре внимания — романтические отношения, дети, творчество, увлечения и самовыражение. Может усилиться желание проявлять таланты, заниматься любимым делом, выходить на публику и получать признание. Год может быть насыщен событиями, связанными с личной жизнью и творческими проектами.",
+
+  "Основное внимание направлено на работу, обязанности, рабочий график, здоровье и организацию повседневности. Возможны изменения условий труда, новые задачи, перестройка режима и привычек. Важной становится способность выстроить устойчивую систему дел и заботы о себе.",
+
+  "В центре внимания оказываются супруг, партнёр, клиенты, деловые союзники и открытые оппоненты. Год может принести важные решения в личной жизни, оформление отношений, начало сотрудничества или пересмотр договорённостей. Особое значение приобретает баланс интересов и умение договариваться.",
+
+  "Важными становятся общие деньги, кредиты, налоги, инвестиции, страхование, наследство и финансовые вопросы партнёра. Может возникнуть необходимость решать вопросы совместного имущества или обязательств. На внутреннем уровне год может сопровождаться глубокой переоценкой ценностей и психологическими изменениями.",
+
+  "В центре внимания — дальние путешествия, образование, повышение квалификации, иностранные языки и мировоззрение. Может появиться желание получить новое образование, преподавать, установить международные контакты или выйти за пределы привычной среды. Год связан с поиском новых ориентиров и масштабных планов.",
+
+  "Главными становятся профессия, карьера, социальный статус, репутация и общественное признание. Возможны профессиональный рост, смена должности, открытие собственного дела или повышение ответственности. Важным становится вопрос, какого положения и каких результатов ты хочешь достичь.",
+
+  "На первый план выходят друзья, коллективы, сообщества, аудитория и единомышленники. Год может расширить круг общения, принести полезные знакомства, коллективные проекты и поддержку окружающих. Особое значение приобретают долгосрочные планы и люди, которые помогают двигаться к целям.",
+
+  "Важными становятся внутренний мир, уединение, отдых, психологическая работа и завершение процессов прошлого. Может усилиться потребность в тишине, переосмыслении жизненного пути и восстановлении сил. Это время внутренней подготовки к новому этапу и освобождения от того, что больше не приносит пользы."
 ];
 
 let swe = null;
@@ -43,11 +55,7 @@ function normalize(angle) {
 
 function angleDifference(angle, target) {
   let difference = normalize(angle - target);
-
-  if (difference > 180) {
-    difference -= 360;
-  }
-
+  if (difference > 180) difference -= 360;
   return difference;
 }
 
@@ -61,11 +69,7 @@ function localTimeToUTC(date, time, timezone) {
   const [hour, minute] = time.split(":").map(Number);
 
   const desired = Date.UTC(
-    year,
-    month - 1,
-    day,
-    hour,
-    minute
+    year, month - 1, day, hour, minute
   );
 
   let guess = desired;
@@ -98,12 +102,9 @@ function localTimeToUTC(date, time, timezone) {
     );
 
     const difference = desired - represented;
-
     guess += difference;
 
-    if (difference === 0) {
-      break;
-    }
+    if (difference === 0) break;
   }
 
   return new Date(guess);
@@ -111,27 +112,14 @@ function localTimeToUTC(date, time, timezone) {
 
 function getSunLongitude(date) {
   const jd = swe.dateToJulianDay(date);
-
-  return swe.calculatePosition(
-    jd,
-    Planet.Sun
-  ).longitude;
+  return swe.calculatePosition(jd, Planet.Sun).longitude;
 }
 
-function findSolarReturn(
-  natalLongitude,
-  year,
-  birthDate,
-  timezone
-) {
-  const [, month, originalDay] = birthDate
-    .split("-")
-    .map(Number);
+function findSolarReturn(natalLongitude, year, birthDate, timezone) {
+  const [, month, originalDay] = birthDate.split("-").map(Number);
 
   const day =
-    month === 2 &&
-    originalDay === 29 &&
-    !isLeapYear(year)
+    month === 2 && originalDay === 29 && !isLeapYear(year)
       ? 28
       : originalDay;
 
@@ -180,9 +168,7 @@ function findSolarReturn(
     }
   }
 
-  return new Date(
-    Math.floor((low + high) / 2)
-  );
+  return new Date(Math.floor((low + high) / 2));
 }
 
 function findHouse(longitude, cusps) {
@@ -190,22 +176,16 @@ function findHouse(longitude, cusps) {
 
   for (let house = 1; house <= 12; house++) {
     const start = normalize(cusps[house]);
-
     const nextHouse = house === 12 ? 1 : house + 1;
-
     const end = normalize(cusps[nextHouse]);
 
     const arc = normalize(end - start);
     const distance = normalize(position - start);
 
-    if (distance < arc) {
-      return house;
-    }
+    if (distance < arc) return house;
   }
 
-  throw new Error(
-    "Не удалось определить дом Солнца."
-  );
+  throw new Error("Не удалось определить дом Солнца.");
 }
 
 function formatDate(date, timezone) {
@@ -221,16 +201,12 @@ function formatDate(date, timezone) {
 
 $("city").addEventListener("input", () => {
   clearTimeout(searchTimer);
-
   selectedCity = null;
 
   const query = $("city").value.trim();
-
   $("citySuggestions").replaceChildren();
 
-  if (query.length < 2) {
-    return;
-  }
+  if (query.length < 2) return;
 
   searchTimer = setTimeout(async () => {
     try {
@@ -263,11 +239,8 @@ $("city").addEventListener("input", () => {
 
         item.addEventListener("click", () => {
           selectedCity = place;
-
           $("city").value = item.textContent;
-
           $("citySuggestions").replaceChildren();
-
           $("status").textContent = "";
         });
 
@@ -275,10 +248,9 @@ $("city").addEventListener("input", () => {
       });
 
       if (!data.results || data.results.length === 0) {
-        $("status").textContent =
-          "Город не найден. Попробуй другое написание.";
+        $("status").textContent = "Город не найден. Попробуй другое написание.";
       }
-    } catch (error) {
+    } catch {
       $("status").textContent =
         "Не удалось найти город. Проверь подключение к интернету.";
     }
@@ -289,9 +261,7 @@ $("solarForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   $("result").hidden = true;
-
   $("status").textContent = "Выполняется расчёт...";
-
   $("calculateButton").disabled = true;
 
   try {
@@ -300,26 +270,19 @@ $("solarForm").addEventListener("submit", async (event) => {
     const year = Number($("solarYear").value);
 
     if (!birthDate || !birthTime) {
-      throw new Error(
-        "Укажи дату и время рождения."
-      );
+      throw new Error("Укажи дату и время рождения.");
     }
 
     if (!selectedCity) {
-      throw new Error(
-        "Выбери город рождения из выпадающего списка."
-      );
+      throw new Error("Выбери город рождения из выпадающего списка.");
     }
 
     if (!selectedCity.timezone) {
-      throw new Error(
-        "Не удалось определить часовой пояс города."
-      );
+      throw new Error("Не удалось определить часовой пояс города.");
     }
 
     if (!swe) {
       swe = new SwissEphemeris();
-
       await swe.init();
     }
 
@@ -343,9 +306,7 @@ $("solarForm").addEventListener("submit", async (event) => {
       selectedCity.timezone
     );
 
-    const solarJD = swe.dateToJulianDay(
-      solarReturn
-    );
+    const solarJD = swe.dateToJulianDay(solarReturn);
 
     const houses = swe.calculateHouses(
       solarJD,
@@ -364,9 +325,7 @@ $("solarForm").addEventListener("submit", async (event) => {
       houses.cusps
     );
 
-    $("houseNumber").textContent =
-      `${house} дом`;
-
+    $("houseNumber").textContent = `${house} дом`;
     $("houseTitle").textContent =
       `Солнце в ${house} доме соляра`;
 
