@@ -1,0 +1,279 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Калькулятор соляра</title>
+</head>
+<body>
+
+<div class="solar-page">
+
+  <div class="solar-hero">
+
+    <div class="solar-art">
+      <svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="170" cy="91" r="77" fill="none" stroke="#D9BD91"/>
+        <circle cx="170" cy="91" r="62" fill="none" stroke="#C9A879" stroke-dasharray="3 5"/>
+        <circle cx="170" cy="91" r="39" fill="#F1DFC1" stroke="#B99460" stroke-width="1.5"/>
+        <circle cx="170" cy="91" r="26" fill="#D5AD70"/>
+        <g stroke="#B99460" stroke-width="1.5">
+          <path d="M170 31 V17 M170 165 V151 M110 91 H96 M244 91 H230 M128 49 L118 39 M222 143 L212 133 M212 49 L222 39 M118 143 L128 133"/>
+        </g>
+        <g fill="#9B774C" font-size="13" text-anchor="middle">
+          <text x="170" y="10">✦</text>
+          <text x="250" y="94">♌</text>
+          <text x="90" y="94">♒</text>
+          <text x="170" y="183">☼</text>
+        </g>
+        <circle cx="170" cy="91" r="16" fill="#FFF8E9"/>
+        <path d="M170 65 L175 84 L194 91 L175 98 L170 117 L165 98 L146 91 L165 84 Z" fill="#C69A57"/>
+        <g fill="#B99460">
+          <circle cx="47" cy="44" r="2"/>
+          <circle cx="286" cy="53" r="2"/>
+          <circle cx="62" cy="145" r="2"/>
+          <circle cx="279" cy="137" r="2"/>
+        </g>
+      </svg>
+    </div>
+
+    <h1>Какая сфера жизни станет важной в вашем новом личном году?</h1>
+    <h2>Рассчитайте положение Солнца в соляре бесплатно</h2>
+    <p>Узнайте, в каком доме вашей карты соляра находится Солнце и на какую тему стоит обратить внимание в предстоящем году.</p>
+
+  </div>
+
+  <div class="solar-card">
+
+    <h3>Данные для расчёта</h3>
+
+    <form id="solarForm">
+
+      <label for="birthDate">Дата рождения</label>
+      <input id="birthDate" type="date" required>
+
+      <label for="birthTime">Время рождения</label>
+      <input id="birthTime" type="time" required>
+
+      <label for="birthCity">Город рождения</label>
+      <input id="birthCity" type="text" placeholder="Например, Москва" autocomplete="off" required>
+      <div id="cities"></div>
+
+      <label for="solarYear">Год соляра</label>
+      <select id="solarYear" required></select>
+
+      <button type="submit" id="solarButton">Рассчитать мой соляр</button>
+
+      <p class="solar-note">Для расчёта укажите максимально точное время и место рождения.</p>
+
+    </form>
+
+    <div id="solarResult" class="solar-result" hidden>
+      <div class="result-label">Ваш результат</div>
+      <h2 id="resultTitle"></h2>
+      <h3 id="resultSubtitle"></h3>
+      <p id="resultText"></p>
+      <div class="result-divider"></div>
+      <p class="result-disclaimer">
+        Это краткая интерпретация положения Солнца в соляре. Она раскрывает одну из тем года, но не заменяет полный анализ карты.
+      </p>
+    </div>
+
+    <div id="solarError" class="solar-error" hidden></div>
+
+  </div>
+</div>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #F8F1E9;
+  color: #382D30;
+  font-family: Arial, sans-serif;
+}
+
+.solar-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 15px 30px;
+  background: #F8F1E9;
+  border-radius: 18px;
+}
+
+.solar-hero {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.solar-art {
+  max-width: 300px;
+  margin: 0 auto 12px;
+}
+
+.solar-art svg {
+  width: 100%;
+  display: block;
+}
+
+.solar-hero h1 {
+  font-family: Georgia, serif;
+  font-size: 27px;
+  font-weight: normal;
+  line-height: 1.25;
+  margin: 10px 0 16px;
+}
+
+.solar-hero h2 {
+  color: #987449;
+  font-family: Georgia, serif;
+  font-size: 19px;
+  font-weight: normal;
+  line-height: 1.4;
+  margin: 0 0 12px;
+}
+
+.solar-hero p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.solar-card {
+  background: #FFFDFA;
+  border: 1px solid #E9DACA;
+  border-radius: 17px;
+  padding: 22px 17px;
+  box-shadow: 0 5px 20px rgba(100,70,45,.06);
+}
+
+.solar-card h3 {
+  font-family: Georgia, serif;
+  font-size: 22px;
+  font-weight: normal;
+  margin: 0 0 19px;
+}
+
+.solar-card label {
+  display: block;
+  font-size: 14px;
+  margin: 16px 0 7px;
+}
+
+.solar-card input,
+.solar-card select {
+  display: block;
+  width: 100%;
+  height: 49px;
+  padding: 0 12px;
+  border: 1px solid #E5D8CC;
+  border-radius: 10px;
+  background: #FFF;
+  color: #382D30;
+  font-size: 15px;
+}
+
+.solar-card button {
+  display: block;
+  width: 100%;
+  min-height: 53px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 11px;
+  background: #60476D;
+  color: #FFF;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.solar-card button:disabled {
+  opacity: .65;
+}
+
+.solar-note {
+  color: #897B72;
+  font-size: 12px;
+  line-height: 1.5;
+  margin-top: 13px;
+}
+
+#cities {
+  position: relative;
+  z-index: 2;
+}
+
+.city-option {
+  padding: 12px;
+  background: white;
+  border: 1px solid #E5D8CC;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.city-option:active {
+  background: #F6EEE5;
+}
+
+.solar-result {
+  margin-top: 25px;
+  padding: 20px;
+  background: #F6EEE5;
+  border: 1px solid #E9D9C9;
+  border-radius: 14px;
+}
+
+.result-label {
+  color: #987449;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.solar-result h2 {
+  font-family: Georgia, serif;
+  font-size: 24px;
+  font-weight: normal;
+  line-height: 1.3;
+  margin: 12px 0;
+}
+
+.solar-result h3 {
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.solar-result p {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.result-divider {
+  height: 1px;
+  background: #DFCCB8;
+  margin: 16px 0;
+}
+
+.result-disclaimer {
+  color: #897B72;
+  font-size: 12px !important;
+}
+
+.solar-error {
+  margin-top: 15px;
+  color: #A13E3E;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+[hidden] {
+  display: none !important;
+}
+</style>
+
+<script type="module" src="/src/main.js"></script>
+
+</body>
+</html>
