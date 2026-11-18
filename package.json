@@ -5,12 +5,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vite build"
+    "dev": "vite",
+    "build": "vite",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@swisseph/browser": "1.4.0"
   },
   "devDependencies": {
-    "vite": "^6.0.0"
+    "vite": "^6.4.1"
   }
 }
