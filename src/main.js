@@ -1,55 +1,31 @@
-
 import {
   SwissEphemeris,
   Planet,
   HouseSystem
 } from "@swisseph/browser";
 
-const $ = id => document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
-const form = $("solarForm");
-const cityInput = $("birthCity");
-const cityList = $("cities");
-const yearSelect = $("solarYear");
-const button = $("solarButton");
-const result = $("solarResult");
-const errorBox = $("solarError");
+const descriptions = [
+  "Личность, самостоятельность, инициатива и новые начинания.",
+  "Личные доходы, заработок, материальные ресурсы и ценности.",
+  "Общение, обучение, документы, поездки и новые контакты.",
+  "Дом, семья, недвижимость, род и внутреннее благополучие.",
+  "Любовь, дети, творчество, увлечения и самовыражение.",
+  "Работа, повседневные обязанности, здоровье и организация жизни.",
+  "Отношения, брак, партнёрство и деловое сотрудничество.",
+  "Общие финансы, инвестиции, кредиты и глубокие перемены.",
+  "Путешествия, образование, мировоззрение и расширение горизонтов.",
+  "Карьера, профессия, статус, достижения и общественное признание.",
+  "Друзья, единомышленники, аудитория и долгосрочные планы.",
+  "Внутренний мир, уединение, завершение циклов и скрытые ресурсы."
+];
 
+let swe;
 let selectedCity = null;
-let swe = null;
-let searchTimer = null;
+let searchTimer;
 
-const houseThemes = [
-  "Личность и новые начинания",
-  "Деньги, доходы и личные ресурсы",
-  "Общение, обучение и поездки",
-  "Дом, семья и недвижимость",
-  "Любовь, дети и творчество",
-  "Работа, здоровье и повседневные дела",
-  "Отношения и партнёрство",
-  "Общие финансы и трансформация",
-  "Путешествия, образование и мировоззрение",
-  "Карьера, статус и достижения",
-  "Друзья, окружение и планы на будущее",
-  "Внутренний мир и завершение циклов"
-];
-
-const interpretations = [
-  "Год личной инициативы. В центре внимания окажетесь вы сами, ваши желания, самостоятельность и новые начинания. Хорошее время, чтобы заявить о себе и определить личные ориентиры.",
-  "На первый план выходят деньги, заработок, материальные ресурсы и личные ценности. Важно пересмотреть отношение к доходам, финансовым возможностям и собственным навыкам.",
-  "Год общения, информации, обучения и новых контактов. Значимыми могут стать поездки, документы, переговоры, отношения с родственниками и ближайшим окружением.",
-  "Внимание сосредоточится на доме, семье, недвижимости и личном пространстве. Возможны важные семейные решения, перемены в жилищных условиях и вопросы, связанные с родителями.",
-  "Год творчества, самовыражения, любви и детей. Важными становятся личные увлечения, романтические отношения, радость жизни и проекты, в которые хочется вкладывать душу.",
-  "В центре внимания работа, повседневные обязанности, организация жизни и забота о здоровье. Год подходит для пересмотра привычек, рабочего графика и системы ежедневных дел.",
-  "Главная тема года — отношения и взаимодействие с другими людьми. Особое значение приобретают брак, партнёрство, сотрудничество, договорённости и умение находить баланс интересов.",
-  "Год глубоких перемен и вопросов общих ресурсов. Важными могут стать кредиты, налоги, инвестиции, деньги партнёра, наследство и пересмотр финансовых обязательств.",
-  "На первый план выходят расширение горизонтов, образование, путешествия и мировоззрение. Год может принести новые знания, интерес к другим культурам и изменение жизненных взглядов.",
-  "В центре внимания карьера, профессия, статус и общественная реализация. Важными становятся профессиональные цели, ответственность, достижения и направление дальнейшего развития.",
-  "Год общения с единомышленниками, друзьями и коллективами. Особое значение приобретают аудитория, сообщества, командные проекты и долгосрочные планы.",
-  "Важной становится внутренняя жизнь, потребность в уединении и переосмыслении. Год подходит для завершения старых процессов, восстановления сил и работы с тем, что обычно остаётся за кадром."
-];
-
-// Заполняем список годов
+const yearSelect = $("solarYear");
 const currentYear = new Date().getFullYear();
 
 for (let year = currentYear; year <= currentYear + 10; year++) {
@@ -59,15 +35,23 @@ for (let year = currentYear; year <= currentYear + 10; year++) {
   yearSelect.appendChild(option);
 }
 
-// Перевод местного времени города в UTC
+yearSelect.value = String(currentYear);
+
+function normalize(angle) {
+  return ((angle % 360) + 360) % 360;
+}
+
+function angleDifference(angle, target) {
+  let difference = normalize(angle - target);
+  if (difference > 180) difference -= 360;
+  return difference;
+}
+
 function localTimeToUTC(date, time, timezone) {
   const [year, month, day] = date.split("-").map(Number);
   const [hour, minute] = time.split(":").map(Number);
 
-  const desired = Date.UTC(
-    year, month - 1, day, hour, minute
-  );
-
+  const desired = Date.UTC(year, month - 1, day, hour, minute);
   let guess = desired;
 
   const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -84,8 +68,8 @@ function localTimeToUTC(date, time, timezone) {
   for (let i = 0; i < 5; i++) {
     const parts = Object.fromEntries(
       formatter.formatToParts(new Date(guess))
-        .filter(p => p.type !== "literal")
-        .map(p => [p.type, Number(p.value)])
+        .filter(part => part.type !== "literal")
+        .map(part => [part.type, Number(part.value)])
     );
 
     const represented = Date.UTC(
@@ -106,171 +90,86 @@ function localTimeToUTC(date, time, timezone) {
   return new Date(guess);
 }
 
-// Поиск города рождения
-cityInput.addEventListener("input", () => {
-  clearTimeout(searchTimer);
-  selectedCity = null;
-
-  const query = cityInput.value.trim();
-
-  if (query.length < 2) {
-    cityList.innerHTML = "";
-    return;
-  }
-
-  searchTimer = setTimeout(async () => {
-    try {
-      const url =
-        "https://geocoding-api.open-meteo.com/v1/search?name=" +
-        encodeURIComponent(query) +
-        "&count=7&language=ru&format=json";
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error("Ошибка поиска города.");
-      }
-
-      const data = await response.json();
-      cityList.innerHTML = "";
-
-      (data.results || []).forEach(place => {
-        const item = document.createElement("div");
-        item.className = "city-option";
-
-        item.textContent = [
-          place.name,
-          place.admin1,
-          place.country
-        ].filter(Boolean).join(", ");
-
-        item.addEventListener("click", () => {
-          selectedCity = place;
-          cityInput.value = item.textContent;
-          cityList.innerHTML = "";
-        });
-
-        cityList.appendChild(item);
-      });
-
-      if (!data.results || !data.results.length) {
-        cityList.textContent = "Город не найден. Попробуйте другое название.";
-      }
-
-    } catch (err) {
-      showError("Не удалось найти город. Проверьте интернет-соединение.");
-    }
-  }, 400);
-});
-
-function showError(message) {
-  errorBox.textContent = message;
-  errorBox.hidden = false;
-}
-
-function normalize(angle) {
-  return ((angle % 360) + 360) % 360;
-}
-
-// Разница углов в диапазоне от -180 до +180
-function angleDifference(a, b) {
-  return ((a - b + 540) % 360) - 180;
-}
-
-// Положение Солнца на заданный момент
-function getSunLongitude(timestamp) {
-  const jd = swe.dateToJulianDay(new Date(timestamp));
-  const sun = swe.calculatePosition(jd, Planet.Sun);
-  return normalize(sun.longitude);
-}
-
-// Ищем точный момент возвращения Солнца
-function findSolarReturn(natalLongitude, year, timezone) {
-  const start = localTimeToUTC(
-    `${year}-01-01`, "00:00", timezone
-  ).getTime();
-
-  const end = localTimeToUTC(
-    `${year + 1}-01-01`, "00:00", timezone
-  ).getTime();
-
-  const step = 6 * 60 * 60 * 1000;
-
-  let left = start;
-  let leftDiff = angleDifference(
-    getSunLongitude(left),
-    natalLongitude
-  );
-
-  for (
-    let right = left + step;
-    right <= end;
-    right += step
-  ) {
-    const rightDiff = angleDifference(
-      getSunLongitude(right),
-      natalLongitude
-    );
-
-    // Солнце движется вперёд по зодиаку.
-    // Ищем переход через натальный градус.
-    if (
-      leftDiff <= 0 &&
-      rightDiff >= 0 &&
-      leftDiff > -5 &&
-      rightDiff < 5
-    ) {
-      let low = left;
-      let high = right;
-
-      while (high - low > 1000) {
-        const middle = Math.floor((low + high) / 2);
-
-        const middleDiff = angleDifference(
-          getSunLongitude(middle),
-          natalLongitude
-        );
-
-        if (middleDiff < 0) {
-          low = middle;
-        } else {
-          high = middle;
-        }
-      }
-
-      return new Date((low + high) / 2);
-    }
-
-    left = right;
-    leftDiff = rightDiff;
-  }
-
-  throw new Error(
-    "Не удалось найти момент соляра в выбранном году."
-  );
-}
-
-// Определяем дом по куспидам
 function findHouse(longitude, cusps) {
   const position = normalize(longitude);
 
-  for (let i = 1; i <= 12; i++) {
-    const start = normalize(cusps[i]);
-    const end = normalize(cusps[i === 12 ? 1 : i + 1]);
+  for (let house = 1; house <= 12; house++) {
+    const start = normalize(cusps[house]);
+    const end = normalize(cusps[house === 12 ? 1 : house + 1]);
 
     const arc = normalize(end - start);
     const distance = normalize(position - start);
 
-    if (distance < arc || arc === 0) {
-      return i;
-    }
+    if (distance < arc) return house;
   }
 
   throw new Error("Не удалось определить дом Солнца.");
 }
 
-// Отображаем дату соляра в часовом поясе рождения
-function formatSolarDate(date, timezone) {
+function getSunLongitude(date) {
+  const jd = swe.dateToJulianDay(date);
+  return swe.calculatePosition(jd, Planet.Sun).longitude;
+}
+
+function findSolarReturn(natalLongitude, year, birthDate, timezone) {
+  const [, month, day] = birthDate.split("-").map(Number);
+
+  // Для рождения 29 февраля в невисокосном году используем 28 февраля.
+  const targetDay =
+    month === 2 && day === 29 && !isLeapYear(year) ? 28 : day;
+
+  const dateString =
+    `${year}-${String(month).padStart(2, "0")}-${String(targetDay).padStart(2, "0")}`;
+
+  const approximateDate = localTimeToUTC(
+    dateString,
+    "12:00",
+    timezone
+  );
+
+  const dayMs = 24 * 60 * 60 * 1000;
+  let low = approximateDate.getTime() - 4 * dayMs;
+  let high = approximateDate.getTime() + 4 * dayMs;
+
+  const lowDifference = angleDifference(
+    getSunLongitude(new Date(low)),
+    natalLongitude
+  );
+
+  const highDifference = angleDifference(
+    getSunLongitude(new Date(high)),
+    natalLongitude
+  );
+
+  if (!(lowDifference <= 0 && highDifference >= 0)) {
+    throw new Error(
+      "Не удалось найти момент соляра в выбранном диапазоне. Проверь данные рождения."
+    );
+  }
+
+  // Уточняем момент возвращения Солнца с точностью до секунды.
+  while (high - low > 1000) {
+    const middle = Math.floor((low + high) / 2);
+    const difference = angleDifference(
+      getSunLongitude(new Date(middle)),
+      natalLongitude
+    );
+
+    if (difference < 0) {
+      low = middle;
+    } else {
+      high = middle;
+    }
+  }
+
+  return new Date(Math.floor((low + high) / 2));
+}
+
+function isLeapYear(year) {
+  return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+
+function formatDate(date, timezone) {
   return new Intl.DateTimeFormat("ru-RU", {
     timeZone: timezone,
     day: "numeric",
@@ -281,46 +180,89 @@ function formatSolarDate(date, timezone) {
   }).format(date);
 }
 
-// Основной расчёт
-form.addEventListener("submit", async event => {
+$("city").addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  selectedCity = null;
+
+  const query = $("city").value.trim();
+  $("citySuggestions").replaceChildren();
+
+  if (query.length < 2) return;
+
+  searchTimer = setTimeout(async () => {
+    try {
+      const url =
+        "https://geocoding-api.open-meteo.com/v1/search?name=" +
+        encodeURIComponent(query) +
+        "&count=6&language=ru&format=json";
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error("Ошибка поиска города");
+
+      const data = await response.json();
+
+      $("citySuggestions").replaceChildren();
+
+      (data.results || []).forEach(place => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "suggestion";
+        item.textContent = [
+          place.name,
+          place.admin1,
+          place.country
+        ].filter(Boolean).join(", ");
+
+        item.addEventListener("click", () => {
+          selectedCity = place;
+          $("city").value = item.textContent;
+          $("citySuggestions").replaceChildren();
+        });
+
+        $("citySuggestions").appendChild(item);
+      });
+    } catch {
+      $("status").textContent =
+        "Не удалось найти город. Проверь подключение к интернету.";
+    }
+  }, 350);
+});
+
+$("solarForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
-  result.hidden = true;
-  errorBox.hidden = true;
-  button.disabled = true;
-  button.textContent = "Рассчитываем...";
+  $("result").hidden = true;
+  $("status").textContent = "Выполняется расчёт...";
+  $("calculateButton").disabled = true;
 
   try {
     const birthDate = $("birthDate").value;
     const birthTime = $("birthTime").value;
-    const solarYear = Number(yearSelect.value);
+    const year = Number($("solarYear").value);
 
     if (!birthDate || !birthTime) {
-      throw new Error("Укажите дату и время рождения.");
+      throw new Error("Укажи дату и время рождения.");
     }
 
     if (!selectedCity) {
-      throw new Error("Выберите город из списка подсказок.");
+      throw new Error("Выбери город рождения из списка.");
     }
 
     if (!selectedCity.timezone) {
       throw new Error("Не удалось определить часовой пояс города.");
     }
 
-    const timezone = selectedCity.timezone;
-
-    const birthUTC = localTimeToUTC(
-      birthDate,
-      birthTime,
-      timezone
-    );
-
     if (!swe) {
       swe = new SwissEphemeris();
       await swe.init();
     }
 
-    // Натальное Солнце
+    const birthUTC = localTimeToUTC(
+      birthDate,
+      birthTime,
+      selectedCity.timezone
+    );
+
     const birthJD = swe.dateToJulianDay(birthUTC);
 
     const natalSun = swe.calculatePosition(
@@ -328,65 +270,48 @@ form.addEventListener("submit", async event => {
       Planet.Sun
     );
 
-    // Точный момент возвращения Солнца
     const solarReturn = findSolarReturn(
       natalSun.longitude,
-      solarYear,
-      timezone
+      year,
+      birthDate,
+      selectedCity.timezone
     );
 
-    // Дома на момент соляра по координатам города рождения
-    const returnJD = swe.dateToJulianDay(solarReturn);
+    const solarJD = swe.dateToJulianDay(solarReturn);
 
     const houses = swe.calculateHouses(
-      returnJD,
+      solarJD,
       selectedCity.latitude,
       selectedCity.longitude,
       HouseSystem.Placidus
     );
 
-    // Положение Солнца непосредственно в момент соляра
-    const returnSun = swe.calculatePosition(
-      returnJD,
+    const solarSun = swe.calculatePosition(
+      solarJD,
       Planet.Sun
     );
 
     const house = findHouse(
-      returnSun.longitude,
+      solarSun.longitude,
       houses.cusps
     );
 
-    $("resultTitle").textContent =
-      `Солнце в ${house}-м доме соляра`;
+    $("houseNumber").textContent = `${house} дом`;
+    $("houseTitle").textContent = `Солнце в ${house} доме соляра`;
+    $("houseDescription").textContent = descriptions[house - 1];
 
-    $("resultSubtitle").textContent =
-      houseThemes[house - 1];
+    $("result").hidden = false;
+    $("status").textContent =
+      `Момент соляра: ${formatDate(solarReturn, selectedCity.timezone)}`;
 
-    $("resultText").textContent =
-      interpretations[house - 1];
-
-    const dateNote = document.createElement("p");
-    dateNote.style.color = "#897B72";
-    dateNote.style.fontSize = "12px";
-    dateNote.textContent =
-      "Момент соляра: " +
-      formatSolarDate(solarReturn, timezone);
-
-    $("resultText").after(dateNote);
-
-    result.hidden = false;
-
-    result.scrollIntoView({
+    $("result").scrollIntoView({
       behavior: "smooth",
       block: "start"
     });
-
-  } catch (err) {
-    showError(
-      err.message || "Не удалось выполнить расчёт."
-    );
+  } catch (error) {
+    $("status").textContent =
+      error.message || "Не удалось выполнить расчёт. Попробуй ещё раз.";
   } finally {
-    button.disabled = false;
-    button.textContent = "Рассчитать мой соляр";
+    $("calculateButton").disabled = false;
   }
 });
