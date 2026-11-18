@@ -55,7 +55,11 @@ function normalize(angle) {
 
 function angleDifference(angle, target) {
   let difference = normalize(angle - target);
-  if (difference > 180) difference -= 360;
+
+  if (difference > 180) {
+    difference -= 360;
+  }
+
   return difference;
 }
 
@@ -69,7 +73,11 @@ function localTimeToUTC(date, time, timezone) {
   const [hour, minute] = time.split(":").map(Number);
 
   const desired = Date.UTC(
-    year, month - 1, day, hour, minute
+    year,
+    month - 1,
+    day,
+    hour,
+    minute
   );
 
   let guess = desired;
@@ -102,9 +110,12 @@ function localTimeToUTC(date, time, timezone) {
     );
 
     const difference = desired - represented;
+
     guess += difference;
 
-    if (difference === 0) break;
+    if (difference === 0) {
+      break;
+    }
   }
 
   return new Date(guess);
@@ -112,14 +123,27 @@ function localTimeToUTC(date, time, timezone) {
 
 function getSunLongitude(date) {
   const jd = swe.dateToJulianDay(date);
-  return swe.calculatePosition(jd, Planet.Sun).longitude;
+
+  return swe.calculatePosition(
+    jd,
+    Planet.Sun
+  ).longitude;
 }
 
-function findSolarReturn(natalLongitude, year, birthDate, timezone) {
-  const [, month, originalDay] = birthDate.split("-").map(Number);
+function findSolarReturn(
+  natalLongitude,
+  year,
+  birthDate,
+  timezone
+) {
+  const [, month, originalDay] = birthDate
+    .split("-")
+    .map(Number);
 
   const day =
-    month === 2 && originalDay === 29 && !isLeapYear(year)
+    month === 2 &&
+    originalDay === 29 &&
+    !isLeapYear(year)
       ? 28
       : originalDay;
 
@@ -168,7 +192,9 @@ function findSolarReturn(natalLongitude, year, birthDate, timezone) {
     }
   }
 
-  return new Date(Math.floor((low + high) / 2));
+  return new Date(
+    Math.floor((low + high) / 2)
+  );
 }
 
 function findHouse(longitude, cusps) {
@@ -176,16 +202,22 @@ function findHouse(longitude, cusps) {
 
   for (let house = 1; house <= 12; house++) {
     const start = normalize(cusps[house]);
+
     const nextHouse = house === 12 ? 1 : house + 1;
+
     const end = normalize(cusps[nextHouse]);
 
     const arc = normalize(end - start);
     const distance = normalize(position - start);
 
-    if (distance < arc) return house;
+    if (distance < arc) {
+      return house;
+    }
   }
 
-  throw new Error("Не удалось определить дом Солнца.");
+  throw new Error(
+    "Не удалось определить дом Солнца."
+  );
 }
 
 function formatDate(date, timezone) {
@@ -201,12 +233,16 @@ function formatDate(date, timezone) {
 
 $("city").addEventListener("input", () => {
   clearTimeout(searchTimer);
+
   selectedCity = null;
 
   const query = $("city").value.trim();
+
   $("citySuggestions").replaceChildren();
 
-  if (query.length < 2) return;
+  if (query.length < 2) {
+    return;
+  }
 
   searchTimer = setTimeout(async () => {
     try {
@@ -239,8 +275,11 @@ $("city").addEventListener("input", () => {
 
         item.addEventListener("click", () => {
           selectedCity = place;
+
           $("city").value = item.textContent;
+
           $("citySuggestions").replaceChildren();
+
           $("status").textContent = "";
         });
 
@@ -248,9 +287,11 @@ $("city").addEventListener("input", () => {
       });
 
       if (!data.results || data.results.length === 0) {
-        $("status").textContent = "Город не найден. Попробуй другое написание.";
+        $("status").textContent =
+          "Город не найден. Попробуй другое написание.";
       }
-    } catch {
+
+    } catch (error) {
       $("status").textContent =
         "Не удалось найти город. Проверь подключение к интернету.";
     }
@@ -261,7 +302,9 @@ $("solarForm").addEventListener("submit", async (event) => {
   event.preventDefault();
 
   $("result").hidden = true;
+
   $("status").textContent = "Выполняется расчёт...";
+
   $("calculateButton").disabled = true;
 
   try {
@@ -270,19 +313,26 @@ $("solarForm").addEventListener("submit", async (event) => {
     const year = Number($("solarYear").value);
 
     if (!birthDate || !birthTime) {
-      throw new Error("Укажи дату и время рождения.");
+      throw new Error(
+        "Укажи дату и время рождения."
+      );
     }
 
     if (!selectedCity) {
-      throw new Error("Выбери город рождения из выпадающего списка.");
+      throw new Error(
+        "Выбери город рождения из выпадающего списка."
+      );
     }
 
     if (!selectedCity.timezone) {
-      throw new Error("Не удалось определить часовой пояс города.");
+      throw new Error(
+        "Не удалось определить часовой пояс города."
+      );
     }
 
     if (!swe) {
       swe = new SwissEphemeris();
+
       await swe.init();
     }
 
@@ -306,7 +356,9 @@ $("solarForm").addEventListener("submit", async (event) => {
       selectedCity.timezone
     );
 
-    const solarJD = swe.dateToJulianDay(solarReturn);
+    const solarJD = swe.dateToJulianDay(
+      solarReturn
+    );
 
     const houses = swe.calculateHouses(
       solarJD,
@@ -325,7 +377,9 @@ $("solarForm").addEventListener("submit", async (event) => {
       houses.cusps
     );
 
-    $("houseNumber").textContent = `${house} дом`;
+    $("houseNumber").textContent =
+      `${house} дом`;
+
     $("houseTitle").textContent =
       `Солнце в ${house} доме соляра`;
 
@@ -335,7 +389,7 @@ $("solarForm").addEventListener("submit", async (event) => {
     $("result").hidden = false;
 
     $("status").textContent =
-      `Момент соляра: ${formatDate(
+      `Ваш новый личный год начинается: ${formatDate(
         solarReturn,
         selectedCity.timezone
       )}`;
